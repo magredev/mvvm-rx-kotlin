@@ -10,6 +10,7 @@ import com.magre.challenge.repository.api.GenericMovieResponseMapper
 import com.magre.challenge.viewmodel.data.Movie
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
+import java.net.UnknownHostException
 
 class MovieViewModel() : ViewModel() {
 
@@ -28,6 +29,8 @@ class MovieViewModel() : ViewModel() {
 
     private var isDataLoading: MutableLiveData<Boolean> = MutableLiveData()
     private var movies: MutableLiveData<List<Movie>> = MutableLiveData()
+    private var isNetworkError: MutableLiveData<Boolean> = MutableLiveData()
+    private var isUnknownError: MutableLiveData<Boolean> = MutableLiveData()
 
     private var totalPages: Int = 0
     private var currentPage: Int = 1
@@ -46,6 +49,10 @@ class MovieViewModel() : ViewModel() {
 
     fun getMovies() : LiveData<List<Movie>> = movies
 
+    fun isNetworkError() : LiveData<Boolean> = isNetworkError
+
+    fun isUnknownError() : LiveData<Boolean> = isUnknownError
+
     fun loadMovies() {
         isDataLoading.postValue(true)
 
@@ -63,6 +70,10 @@ class MovieViewModel() : ViewModel() {
                         { error ->
                             error.printStackTrace()
                             isDataLoading.postValue(false)
+                            when (error) {
+                                is UnknownHostException -> isNetworkError.postValue(true)
+                                else -> isUnknownError.postValue(true)
+                            }
                         }
                 )
     }

@@ -4,5 +4,9 @@
 
     <string name="search">Search</string>
     <string name="search_movie">Search movie</string>
+    <string name="no_movies">There are no movies</string>
+
+    <string name="network_error">Please check your network connection</string>
+    <string name="unknown_error">Unexpected error has occurred. Please try later</string>
 
 </resources>

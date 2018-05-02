@@ -15,7 +15,7 @@ import com.magre.challenge.ui.movielist.adapter.MovieListAdapter
 import com.magre.challenge.viewmodel.MovieViewModel
 import com.magre.challenge.viewmodel.data.Movie
 import kotlinx.android.synthetic.main.fragment_movie_list.*
-
+import org.jetbrains.anko.support.v4.onRefresh
 
 
 class MovieListFragment : BaseFragment() {
@@ -35,6 +35,8 @@ class MovieListFragment : BaseFragment() {
         movieViewModel = MovieViewModel.getInstance(activity!!)
 
         initMovieList()
+
+        initSwipeRefresh()
 
         initObservers()
 
@@ -68,10 +70,19 @@ class MovieListFragment : BaseFragment() {
         }
     }
 
+    private fun initSwipeRefresh() {
+        swipeRefresh.onRefresh {
+            movieViewModel?.resetCurrentPage()
+            movieViewModel?.loadMovies()
+        }
+    }
+
     private fun initObservers() {
         movieViewModel?.isDataLoading()?.observe(this, Observer {
             it?.let {
-                progressBar.visible(it)
+                if (!swipeRefresh.isRefreshing) {
+                    progressBar.visible(it)
+                }
             }
         })
 
@@ -80,10 +91,36 @@ class MovieListFragment : BaseFragment() {
                 showMovies(it)
             }
         })
+
+        movieViewModel?.isNetworkError()?.observe(this, Observer {
+            it?.let {
+                if (it) {
+                    mainActivity.showMessage(getString(R.string.network_error))
+                    hideRefreshingIcon()
+                }
+            }
+        })
+
+        movieViewModel?.isUnknownError()?.observe(this, Observer {
+            it?.let {
+                if (it) {
+                    mainActivity.showMessage(getString(R.string.unknown_error))
+                    hideRefreshingIcon()
+                }
+            }
+        })
     }
 
     private fun showMovies(movies: List<Movie>) {
+        if (swipeRefresh.isRefreshing) {
+            movieAdapter.clearItems()
+            swipeRefresh.isRefreshing = false
+        }
+
         movieAdapter.addMoreItems(movies)
+        if (movies.isEmpty()) {
+            mainActivity.showMessage(getString(R.string.no_movies))
+        }
     }
 
     private fun isEndOfListAndNotLoading(layoutManager: LinearLayoutManager) : Boolean {
@@ -106,5 +143,11 @@ class MovieListFragment : BaseFragment() {
         movieAdapter.clearItems()
 
         movieViewModel?.loadMovies()
+    }
+
+    private fun hideRefreshingIcon() {
+        if (swipeRefresh.isRefreshing) {
+            swipeRefresh.isRefreshing = false
+        }
     }
 }
