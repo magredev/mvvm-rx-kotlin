@@ -30,6 +30,9 @@ class MovieViewModel() : ViewModel() {
     private var popularMovies: MutableLiveData<List<Movie>> = MutableLiveData()
     private var searchMovies: MutableLiveData<List<Movie>> = MutableLiveData()
 
+    private var totalPages: Int = 0
+    private var currentPage: Int = 1
+
     fun isDataLoading() : LiveData<Boolean> = isDataLoading
 
     fun getPopularMovies() : LiveData<List<Movie>> = popularMovies
@@ -38,11 +41,15 @@ class MovieViewModel() : ViewModel() {
 
     fun loadPopularMovies() {
         isDataLoading.postValue(true)
-        movieRepository.getPopularMovies(1)
+        movieRepository.getPopularMovies(currentPage)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe({result ->
-                    popularMovies.postValue(GenericMovieResponseMapper().toMovieList(result))
+                    totalPages = result.totalPages
+                    if (currentPage < totalPages) {
+                        currentPage += 1
+                        popularMovies.postValue(GenericMovieResponseMapper().toMovieList(result))
+                    }
                     isDataLoading.postValue(false)
                 },
                         { error ->
