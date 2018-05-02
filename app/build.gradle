@@ -23,11 +23,13 @@ android {
 
         debug {
             buildConfigField("String", "BASE_URL", "\"https://api.themoviedb.org/3/\"")
+            buildConfigField("String", "BASE_URL_PICTURE", "\"http://image.tmdb.org/t/p/\"")
             buildConfigField("String", "API_KEY", "\"93aea0c77bc168d8bbce3918cefefa45\"")
         }
 
         release {
             buildConfigField("String", "BASE_URL", "\"https://api.themoviedb.org/3/\"")
+            buildConfigField("String", "BASE_URL_PICTURE", "\"http://image.tmdb.org/t/p/\"")
             buildConfigField("String", "API_KEY", "\"93aea0c77bc168d8bbce3918cefefa45\"")
 
             minifyEnabled false
@@ -44,6 +46,7 @@ dependencies {
     implementation "com.android.support:appcompat-v7:$support_library_version"
     implementation "com.android.support.constraint:constraint-layout:$constraint_layout_version"
     implementation "com.android.support:design:$support_library_version"
+    compile "com.android.support:cardview-v7:$support_library_version"
 
     compile "org.jetbrains.anko:anko:$anko_version"
     compile "org.jetbrains.anko:anko-commons:$anko_version"
@@ -58,6 +61,8 @@ dependencies {
     implementation "android.arch.lifecycle:extensions:$android_arch_components_version"
 
     implementation "com.github.castorflex.smoothprogressbar:library-circular:$smoothprogressbar_circular_version"
+
+    implementation "com.squareup.picasso:picasso:$picasso_version"
 
     androidTestImplementation("com.android.support.test.espresso:espresso-core:$espresso_version", {
         exclude group: 'com.android.support', module: 'support-annotations'
