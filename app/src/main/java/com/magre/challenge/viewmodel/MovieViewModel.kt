@@ -27,45 +27,37 @@ class MovieViewModel() : ViewModel() {
     }
 
     private var isDataLoading: MutableLiveData<Boolean> = MutableLiveData()
-    private var popularMovies: MutableLiveData<List<Movie>> = MutableLiveData()
-    private var searchMovies: MutableLiveData<List<Movie>> = MutableLiveData()
+    private var movies: MutableLiveData<List<Movie>> = MutableLiveData()
 
     private var totalPages: Int = 0
     private var currentPage: Int = 1
 
+    private var query: String = ""
+
+    fun resetCurrentPage() {
+        currentPage = 1
+    }
+
+    fun setQuery(query: String) {
+        this.query = query
+    }
+
     fun isDataLoading() : LiveData<Boolean> = isDataLoading
 
-    fun getPopularMovies() : LiveData<List<Movie>> = popularMovies
+    fun getMovies() : LiveData<List<Movie>> = movies
 
-    fun getSearchMovies() : LiveData<List<Movie>> = searchMovies
-
-    fun loadPopularMovies() {
+    fun loadMovies() {
         isDataLoading.postValue(true)
-        movieRepository.getPopularMovies(currentPage)
+
+        movieRepository.getMovies(query, currentPage)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe({result ->
                     totalPages = result.totalPages
                     if (currentPage < totalPages) {
                         currentPage += 1
-                        popularMovies.postValue(GenericMovieResponseMapper().toMovieList(result))
+                        movies.postValue(GenericMovieResponseMapper().toMovieList(result))
                     }
-                    isDataLoading.postValue(false)
-                },
-                        { error ->
-                            error.printStackTrace()
-                            isDataLoading.postValue(false)
-                        }
-                )
-    }
-
-    fun searchMovies(query: String) {
-        isDataLoading.postValue(true)
-        movieRepository.searchMovies(query, 1)
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe({result ->
-                    searchMovies.postValue(GenericMovieResponseMapper().toMovieList(result))
                     isDataLoading.postValue(false)
                 },
                         { error ->

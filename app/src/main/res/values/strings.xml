@@ -1,3 +1,8 @@
 <resources>
-    <string name="app_name">Challenge</string>
+
+    <string name="app_name">JNin Challenge</string>
+
+    <string name="search">Search</string>
+    <string name="search_movie">Search movie</string>
+
 </resources>

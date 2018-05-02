@@ -25,4 +25,9 @@ abstract class RecyclerViewAdapterBase<T, V: View> : RecyclerView.Adapter<ViewWr
         items.addAll(moreItems)
         notifyDataSetChanged()
     }
+
+    open fun clearItems() {
+        items.clear()
+        notifyDataSetChanged()
+    }
 }

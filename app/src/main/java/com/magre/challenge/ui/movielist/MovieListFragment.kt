@@ -2,7 +2,6 @@ package com.magre.challenge.ui.movielist
 
 import android.arch.lifecycle.Observer
 import android.os.Bundle
-import android.support.v4.app.Fragment
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
@@ -11,6 +10,7 @@ import android.view.ViewGroup
 import com.magre.challenge.R
 import com.magre.challenge.extension.d
 import com.magre.challenge.extension.visible
+import com.magre.challenge.ui.common.BaseFragment
 import com.magre.challenge.ui.movielist.adapter.MovieListAdapter
 import com.magre.challenge.viewmodel.MovieViewModel
 import com.magre.challenge.viewmodel.data.Movie
@@ -18,7 +18,7 @@ import kotlinx.android.synthetic.main.fragment_movie_list.*
 
 
 
-class MovieListFragment : Fragment() {
+class MovieListFragment : BaseFragment() {
 
     private var movieViewModel: MovieViewModel? = null
 
@@ -38,7 +38,7 @@ class MovieListFragment : Fragment() {
 
         initObservers()
 
-        movieViewModel?.loadPopularMovies()
+        movieViewModel?.loadMovies()
     }
 
     private fun initMovieList() {
@@ -61,7 +61,7 @@ class MovieListFragment : Fragment() {
                     super.onScrolled(recyclerView, dx, dy)
 
                     if (isEndOfListAndNotLoading(mLayoutManager)) {
-                        movieViewModel?.loadPopularMovies()
+                        movieViewModel?.loadMovies()
                     }
                 }
             })
@@ -75,20 +75,14 @@ class MovieListFragment : Fragment() {
             }
         })
 
-        movieViewModel?.getPopularMovies()?.observe(this, Observer {
+        movieViewModel?.getMovies()?.observe(this, Observer {
             it?.let {
-                showPopularMovies(it)
-            }
-        })
-
-        movieViewModel?.getSearchMovies()?.observe(this, Observer {
-            it?.let {
-
+                showMovies(it)
             }
         })
     }
 
-    private fun showPopularMovies(movies: List<Movie>) {
+    private fun showMovies(movies: List<Movie>) {
         movieAdapter.addMoreItems(movies)
     }
 
@@ -104,5 +98,13 @@ class MovieListFragment : Fragment() {
         }
 
         return false
+    }
+
+    fun searchMovie(searchText: String) {
+        movieViewModel?.resetCurrentPage()
+        movieViewModel?.setQuery(searchText)
+        movieAdapter.clearItems()
+
+        movieViewModel?.loadMovies()
     }
 }

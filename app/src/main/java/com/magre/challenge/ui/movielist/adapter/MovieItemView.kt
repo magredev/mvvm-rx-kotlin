@@ -19,7 +19,11 @@ class MovieItemView constructor(
     fun bind(movie: Movie) {
         Picasso.get().load(BuildConfig.BASE_URL_PICTURE + "w92/" + movie.picture).into(moviePicture)
         movieTitle.text = movie.title
-        movieYear.text = movie.releaseYear.toString()
+        if (movie.releaseYear > 0) {
+            movieYear.text = movie.releaseYear.toString()
+        } else {
+            movieYear.text = ""
+        }
         movieOverview.text = movie.overview
     }
 }
